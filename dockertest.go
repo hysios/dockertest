@@ -27,12 +27,9 @@ func Prepare() error {
 		return err
 	}
 
-	var found string
-
 	for _, fi := range list {
 		for _, s := range Dockerfiles {
 			if fi.Name() == s && !fi.IsDir() {
-				found = fi.Name()
 				goto Found
 			}
 		}
