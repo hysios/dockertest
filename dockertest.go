@@ -67,7 +67,7 @@ func IsDockerRunning() bool {
 }
 
 func RunDockerCompose(cwd string) error {
-	docker := exec.Command("docker-compose", "-d", "up")
+	docker := exec.Command("docker-compose", "up", "-d")
 	docker.Dir = cwd
 	return docker.Run()
 
