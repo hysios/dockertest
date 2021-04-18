@@ -49,7 +49,7 @@ Found:
 		return errors.New("always running")
 	}
 
-	return nil
+	return RunDockerCompose()
 }
 
 func IsDockerRunning() bool {
