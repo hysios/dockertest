@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -17,7 +18,7 @@ var (
 )
 
 func Prepare() error {
-	dir, err := os.Getwd()
+	dir, err := GoModuleRoot()
 	if err != nil {
 		return err
 	}
@@ -61,4 +62,26 @@ func IsDockerRunning() bool {
 
 func RunDockerCompose() error {
 	return exec.Command("docker-compose", "-d", "up").Run()
+}
+
+func GoModuleRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	paths := strings.Split(dir, string(filepath.Separator))
+
+	l := len(paths)
+	for i := 0; i < l; i++ {
+		dir := strings.Join(paths[l-i:], string(filepath.Separator))
+
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		} else if os.IsNotExist(err) {
+			continue
+		}
+	}
+
+	return "", os.ErrNotExist
 }
