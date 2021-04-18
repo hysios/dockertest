@@ -15,7 +15,13 @@ var (
 		"docker-compose.yml",
 		"docker-compose.yaml",
 	}
+
+	startDir string
 )
+
+func SetupDir(s string) {
+	startDir = s
+}
 
 func Prepare() error {
 	dir, err := GoModuleRoot()
@@ -65,16 +71,13 @@ func RunDockerCompose() error {
 }
 
 func GoModuleRoot() (string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
+	dir := startDir
 
 	paths := strings.Split(dir, string(filepath.Separator))
 
 	l := len(paths)
 	for i := 0; i < l; i++ {
-		dir := strings.Join(paths[l-i:], string(filepath.Separator))
+		dir := strings.Join(paths[:l-i], string(filepath.Separator))
 
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
 			return dir, nil
@@ -84,4 +87,9 @@ func GoModuleRoot() (string, error) {
 	}
 
 	return "", os.ErrNotExist
+}
+
+func init() {
+	dir, _ := os.Getwd()
+	startDir = dir
 }
