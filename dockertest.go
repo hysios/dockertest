@@ -49,7 +49,7 @@ Found:
 		return errors.New("always running")
 	}
 
-	return RunDockerCompose()
+	return RunDockerCompose(dir)
 }
 
 func IsDockerRunning() bool {
@@ -66,8 +66,11 @@ func IsDockerRunning() bool {
 	return n > 0
 }
 
-func RunDockerCompose() error {
-	return exec.Command("docker-compose", "-d", "up").Run()
+func RunDockerCompose(cwd string) error {
+	docker := exec.Command("docker-compose", "-d", "up")
+	docker.Dir = cwd
+	return docker.Run()
+
 }
 
 func GoModuleRoot() (string, error) {
